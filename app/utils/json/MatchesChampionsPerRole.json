@@ -1,0 +1,164 @@
+[
+    {
+        "top": [
+            {
+                "id": "Rengar",
+                "name": "Rengar",
+                "image": {
+                    "full": "Rengar.png",
+                    "sprite": "Rengar_0.png"
+                },
+                "wins": 89,
+                "losses": 131
+            },
+            {
+                "id": "Vayne",
+                "name": "Vayne",
+                "image": {
+                    "full": "Vayne.png",
+                    "sprite": "Vayne_0.png"
+                },
+                "wins": 200,
+                "losses": 118
+            },
+            {
+                "id": "Aatrox",
+                "name": "Aatrox",
+                "image": {
+                    "full": "Aatrox.png",
+                    "sprite": "Aatrox_0.png"
+                },
+                "wins": 195,
+                "losses": 98
+            }
+        ],
+        "jungle": [
+            {
+                "id": "Khazix",
+                "name": "Kha'Zix",
+                "image": {
+                    "full": "Khazix.png",
+                    "sprite": "Khazix_0.png"
+                },
+                "wins": 192,
+                "losses": 52
+            },
+            {
+                "id": "Nunu",
+                "name": "Nunu & Willump",
+                "image": {
+                    "full": "Nunu.png",
+                    "sprite": "Nunu_0.png"
+                },
+                "wins": 112,
+                "losses": 51
+            },
+            {
+                "id": "Rell",
+                "name": "Rell",
+                "image": {
+                    "full": "Rell.png",
+                    "sprite": "Rell_0.png"
+                },
+                "wins": 171,
+                "losses": 126
+            }
+        ],
+        "mid": [
+            {
+                "id": "Khazix",
+                "name": "Kha'Zix",
+                "image": {
+                    "full": "Khazix.png",
+                    "sprite": "Khazix_0.png"
+                },
+                "wins": 192,
+                "losses": 52
+            },
+            {
+                "id": "Nunu",
+                "name": "Nunu & Willump",
+                "image": {
+                    "full": "Nunu.png",
+                    "sprite": "Nunu_0.png"
+                },
+                "wins": 112,
+                "losses": 51
+            },
+            {
+                "id": "Rell",
+                "name": "Rell",
+                "image": {
+                    "full": "Rell.png",
+                    "sprite": "Rell_0.png"
+                },
+                "wins": 171,
+                "losses": 126
+            }
+        ],
+        "adc": [
+            {
+                "id": "Khazix",
+                "name": "Kha'Zix",
+                "image": {
+                    "full": "Khazix.png",
+                    "sprite": "Khazix_0.png"
+                },
+                "wins": 192,
+                "losses": 52
+            },
+            {
+                "id": "Nunu",
+                "name": "Nunu & Willump",
+                "image": {
+                    "full": "Nunu.png",
+                    "sprite": "Nunu_0.png"
+                },
+                "wins": 112,
+                "losses": 51
+            },
+            {
+                "id": "Rell",
+                "name": "Rell",
+                "image": {
+                    "full": "Rell.png",
+                    "sprite": "Rell_0.png"
+                },
+                "wins": 171,
+                "losses": 126
+            }
+        ],
+        "support": [
+            {
+                "id": "Khazix",
+                "name": "Kha'Zix",
+                "image": {
+                    "full": "Khazix.png",
+                    "sprite": "Khazix_0.png"
+                },
+                "wins": 192,
+                "losses": 52
+            },
+            {
+                "id": "Nunu",
+                "name": "Nunu & Willump",
+                "image": {
+                    "full": "Nunu.png",
+                    "sprite": "Nunu_0.png"
+                },
+                "wins": 112,
+                "losses": 51
+            },
+            {
+                "id": "Rell",
+                "name": "Rell",
+                "image": {
+                    "full": "Rell.png",
+                    "sprite": "Rell_0.png"
+                },
+                "wins": 171,
+                "losses": 126
+            }
+        ]
+    }
+]
