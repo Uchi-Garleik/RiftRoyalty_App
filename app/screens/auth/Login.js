@@ -1,45 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
-    Button,
-    Image,
-    ImageBackground,
     Pressable,
     SafeAreaView,
     StyleSheet,
     Text,
-    TouchableHighlight,
     View,
-    Platform,
-    KeyboardAvoidingView,
-    Keyboard,
-    TouchableWithoutFeedback,
-    Dimensions,
-    ActivityIndicator
 } from 'react-native'
-import { Link, useNavigation } from '@react-navigation/native'
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import routes from '../../utils/constants/routes';
-import { checkLogin } from '../../utils/scripts/auth/Login';
-import GlobalStyles from '../../styles/GlobalStyles';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import fonts from '../../utils/constants/fonts';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
-import Environment from '../../utils/constants/Environment';
 import LoginForm from '../../components/auth/LoginForm';
 import RegisterForm from '../../components/auth/RegisterForm';
-// onPress={() => navigation.navigate(routes.CHAMPION_LIST)}
+import colors from '../../utils/constants/colors';
 
-// const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
 
 const Login = () => {
 
     const [visibleForm, setVisibleForm] = useState('signup');
-
-    // useEffect(() => {
-    //     fetch(Environment.USERS_API + '/auth/?username=' + username + '&password=' + password, {})
-    //     .then(response => {return response.json()})
-    //     .then((json)=>{console.log(json); setAuthStatus(json.msg)});
-    // },[]);
 
     return (
         <SafeAreaView style={styles.content}>
@@ -72,7 +48,7 @@ const styles = StyleSheet.create({
         flex: 1,
         minWidth: '100%',
         minHeight: '100%',
-        backgroundColor: '#090D2A',
+        backgroundColor: colors.bgPurple,
     },
     buttonContainer:{
         display: 'flex',
@@ -84,32 +60,34 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     activeButton:{
-        backgroundColor: '#1F255D',
+        backgroundColor: colors.lightPurple,
         borderRadius: 7,
-        width: 205,
-        height: 55,
-        borderColor: '#98AEFF',
+        width: 175,
+        height: 48,
+        borderColor: colors.contrast,
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
     activeText:{
-        color: '#AAC8F3',
-        fontSize: 20,
-        fontFamily: fonts.K2D_B,
+        color:'white',
+        fontSize:16,
+        fontFamily: fonts.K2D_B
     },
     disabledButton:{
         width: 175,
         height: 48,
-        backgroundColor: '#1C2255',
+        backgroundColor: colors.lightPurple,
         borderRadius: 7,
         borderWidth: 1,
-        borderColor: '#566498',
+        borderColor: colors.bgPurple,
         alignItems: 'center',
         justifyContent: 'center',
     },
     disabledText:{
         color:'white',
+        fontSize:16,
+        fontFamily: fonts.K2D_R
     }
 
 });

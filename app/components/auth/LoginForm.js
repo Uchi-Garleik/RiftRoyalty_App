@@ -1,146 +1,232 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import {
-    Button,
-    Image,
-    ImageBackground,
     Pressable,
-    SafeAreaView,
     StyleSheet,
     Text,
-    TouchableHighlight,
     View,
-    Platform,
-    KeyboardAvoidingView,
-    Keyboard,
-    TouchableWithoutFeedback,
-    Dimensions,
     ActivityIndicator
-} from 'react-native'
-import { Link, useNavigation } from '@react-navigation/native'
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { TextInput } from 'react-native-gesture-handler';
 import routes from '../../utils/constants/routes';
-import { checkLogin } from '../../utils/scripts/auth/Login';
-import GlobalStyles from '../../styles/GlobalStyles';
-import { LinearGradient } from 'expo-linear-gradient';
 import fonts from '../../utils/constants/fonts';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
+import Checkbox from 'expo-checkbox';
 import Environment from '../../utils/constants/Environment';
+import colors from '../../utils/constants/colors';
+import { SECRET_KEY } from '@env';
+import * as Crypto from 'expo-crypto';
+import sjcl from 'sjcl';
 
 const LoginForm = () => {
     const navigation = useNavigation();
     const [authStatus, setAuthStatus] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    async function handleLogin() {
+    const [username, onChangeUsername] = useState('');
+    const [email, onChangeEmail] = useState('');
+    const [password, onChangePassword] = useState('');
+    const [isChecked, setChecked] = useState(false);
+    const [fieldsFilled, setFieldsFilled] = useState(false);
+    const [focusedInput, setFocusedInput] = useState(null);
+    const [isEmailValid, setIsEmailValid] = useState(true);
+    const [isUsernameValid, setIsUsernameValid] = useState(true);
+    const [isPasswordValid, setIsPasswordValid] = useState(true);
+    const [isEmailTouched, setIsEmailTouched] = useState(false);
+    const [isUsernameTouched, setIsUsernameTouched] = useState(false);
+    const [isPasswordTouched, setIsPasswordTouched] = useState(false);
+
+    useEffect(() => {
+        if (isChecked && isEmailValid && isUsernameValid && isPasswordValid) {
+            setFieldsFilled(true);
+        } else {
+            setFieldsFilled(false);
+        }
+    }, [isChecked, username, email, password]);
+
+    useEffect(() => {
+        validateEmail(email);
+        validateUsername(username);
+        validatePassword(password);
+    }, [email, username, password]);
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setIsEmailValid(emailRegex.test(email));
+    };
+
+    const validateUsername = (username) => {
+        setIsUsernameValid(username.length > 5);
+    };
+
+    const validatePassword = (password) => {
+        setIsPasswordValid(password.length > 5);
+    };
+
+    async function handleSignup() {
+        setAuthStatus(null);
         setIsLoading(true);
-        setAuthStatus(
-            await (fetch(Environment.USERS_API + '/auth/?username=' + username + '&password=' + password, {})
-                .then(response => { return response.json() })
-                .then((json) => { console.log(json); return json.msg; })));
-        setIsLoading(false);
+        try {
+            const response = await fetch(`${Environment.USERS_API}/signup/`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password
+                })
+            });
+            const json = await response.json();
+            console.log(json);
+            setAuthStatus(json.msg);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
+    useEffect(() => {
+        if (authStatus === 'OK') {
+            console.log('Navigating to Login screen');
+            navigation.navigate(routes.VERIFICATION_EMAIL, { email });
+        } else if (authStatus === 'USER_NOT_CREATED') {
+            console.log('User not created');
+        }
+    }, [authStatus]);
+
     const getAuthStatus = () => {
-        if (isLoading){
+        if (isLoading) {
             return <ActivityIndicator size="large" color="#D0D0D0" />
         }
 
-        if (authStatus === 'OK') {
-            console.log('lets change WEE');
+        if (authStatus === 'USER_NOT_CREATED') {
+            return <Text style={{ color: '#D0D0D0', fontFamily: fonts.AOBOSHI_R }}>Ha ocurrido un error al registrar el usuario</Text>
         }
 
-        if (authStatus === 'USER_NOT_FOUND') {
-            console.log('lets change web');
-            return <Text style={{ color: '#D0D0D0', fontFamily: fonts.AOBOSHI_R }}>No se ha encontrado el usuario</Text>
-        }
-        console.log(authStatus);
-        return <></>;
-    }
+        return <></>
+    };
+
+    const handleFocus = (inputName) => {
+        setFocusedInput(inputName);
+    };
+
+    const handleBlur = (inputName) => {
+        setFocusedInput(null);
+        if (inputName === 'email') setIsEmailTouched(true);
+        if (inputName === 'username') setIsUsernameTouched(true);
+        if (inputName === 'password') setIsPasswordTouched(true);
+    };
 
     return (
-        <>
-            <View style={styles.inputContainer}>
-                {/* FONDO BORDE DE INPUT USERNAME */}
-                <View>
-                    <Text style={{ color: '#D0D0D0', fontFamily: fonts.AOBOSHI_R }}>Username</Text>
-                    <LinearGradient style={[styles.inputBgGradient]} colors={['#F9EFDE', '#FFEFAE']}>
-                        {/* INPUT DE USERNAME */}
-                        <TextInput style={[styles.inputAuth]}
-                            placeholder='Username'
-                            placeholderTextColor={'#D0D0D0'}
-                            onChangeText={(newUsername) => setUsername(newUsername)}
-                        />
-                    </LinearGradient>
-                </View>
-                {/* FONDO BORDE DE INPUT CONTRASEÑA */}
-                {/* INPUT DE CONTRASEÑA */}
-                <View>
-                    <Text style={{ color: '#D0D0D0', fontFamily: fonts.AOBOSHI_R }}>Password</Text>
-                    <LinearGradient style={[styles.inputBgGradient]} colors={['#F9EFDE', '#FFEFAE']}>
-                        <TextInput style={[styles.inputAuth]}
-                            placeholder='Password'
-                            placeholderTextColor={'#D0D0D0'}
-                            onChangeText={(newPassword) => setPassword(newPassword)}
-                        />
-                    </LinearGradient>
-                </View>
+        <View>
+            <View>
+                <Text style={[styles.text, { fontFamily: fonts.K2D_B }]}>Email</Text>
+                <TextInput
+                    style={[
+                        styles.textInput,
+                        focusedInput === 'email' ? styles.focusedInput : styles.unfocusedInput
+                    ]}
+                    onChangeText={onChangeEmail}
+                    value={email}
+                    placeholder="john_doe@example.com"
+                    placeholderTextColor={'lightgray'}
+                    keyboardType="email-address"
+                    onFocus={() => handleFocus('email')}
+                    onBlur={() => handleBlur('email')}
+                />
             </View>
             <View>
-                <View>
-                    {getAuthStatus()}
-                </View>
-                <LinearGradient style={[{ width: 301, height: 46, backgroundColor: '#0C397D' }]} colors={['#32BCE8', '#0C397D']}>
-                    <Pressable style={[
-                        {
-                            padding: 10,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }
-                    ]} onPress={() => { handleLogin(); if(authStatus === 'OK') navigation.navigate(routes.HOME);}}>
-                        <Text style={{ color: '#FFF', fontSize: 17, fontFamily: fonts.AOBOSHI_R }}>LOGIN</Text>
-                    </Pressable>
-                </LinearGradient>
+                <Text style={[styles.text, { fontFamily: fonts.K2D_B }]}>Password</Text>
+                <TextInput
+                    style={[
+                        styles.textInput,
+                        focusedInput === 'password' ? styles.focusedInput : styles.unfocusedInput
+                    ]}
+                    onChangeText={onChangePassword}
+                    value={password}
+                    placeholder="Password"
+                    placeholderTextColor={'lightgray'}
+                    keyboardType="default"
+                    secureTextEntry={true}
+                    onFocus={() => handleFocus('password')}
+                    onBlur={() => handleBlur('password')}
+                />
             </View>
-        </>
+            <View style={styles.checkboxContainer}>
+                <Checkbox
+                    style={styles.checkbox}
+                    value={isChecked}
+                    onValueChange={setChecked}
+                    color={isChecked ? '#4630EB' : undefined}
+                />
+                <Text style={styles.text}>Remember me in this device</Text>
+            </View>
+            <View style={[styles.btnContainer, fieldsFilled ? styles.activeBtnContainer : styles.disabledBtnContainer]}>
+                <Pressable style={styles.btn} onPress={() => { if (fieldsFilled) { handleSignup() } else { console.log('Fields are not filled yet') }; }}>
+                    <Text style={[styles.text, { fontFamily: fonts.K2D_B }]}>SIGN UP</Text>
+                </Pressable>
+            </View>
+            <View style={{ marginTop: 15 }}>
+                {getAuthStatus()}
+            </View>
+        </View>
     )
 }
 
-export default LoginForm
-
 const styles = StyleSheet.create({
-    // ESTILOS CONTAINER DE INPUTS (USERNAME Y PASSWORD)
-    inputContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 30,
-        alignItems: 'center',
+    unfocusedInput: {
+        borderColor: colors.lightPurple,
     },
-    // ESTILOS COMPARTIDOS FONDO/BG GRADIENT DE INPUTS
-    inputBgGradient: {
-        padding: 1.3,
+    focusedInput: {
+        borderColor: colors.contrast,
     },
-    // ESTILOS COMPARTIDOS INPUTS USERNAME Y CONTRASEÑA
-    inputAuth: {
-        width: 300,
-        backgroundColor: 'rgba(0,0,0,0.9)',
-        paddingHorizontal: 15,
-        height: 50,
+    validInput: {
+        borderColor: 'green',
+    },
+    invalidInput: {
+        borderColor: 'red',
+    },
+    textInput: {
+        marginBottom: 10,
+        marginTop: 4,
+        padding: 10,
+        borderWidth: 1,
+        borderRadius: 6,
         color: 'white',
+        minHeight: 39,
+        backgroundColor: colors.inputBg,
     },
-    // INPUT USERNAME
-    inputUsername: {
-
+    text: {
+        color: 'white',
+        fontFamily: fonts.K2D_R,
+        fontSize: 16
     },
-    // INPUT PASSWORD
-    // FONDO GRADIENT DEL BOTON DE ACCION DE LOGIN
-    btnLoginFondo: {
-        borderColor: '#B8FFFF',
-        borderWidth: 1
+    checkboxContainer: {
+        display: 'flex', flexDirection: 'row', minWidth: '100%', gap: 10, marginVertical: 10
     },
-    // ESTILO BOTON DE ACCION DE LOGIN (ABAJO DEL TODO)
-    btnLogin: {
-        width: 300,
-        height: 60
+    linkText: {
+        fontWeight: 'bold', textDecorationLine: 'underline'
     },
+    btnContainer: {
+        borderRadius: 6, marginTop: 5
+    },
+    activeBtnContainer: {
+        backgroundColor: '#595081',
+        borderWidth: 1,
+        borderColor: colors.contrast,
+        borderRadius: 7
+    },
+    disabledBtnContainer: {
+        backgroundColor: '#6C6C6C',
+        borderWidth: 1,
+        borderColor: colors.contrast,
+        borderRadius: 7
+    },
+    btn: {
+        paddingVertical: 10, alignItems: 'center', justifyContent: 'center'
+    }
 });
+
+export default LoginForm;

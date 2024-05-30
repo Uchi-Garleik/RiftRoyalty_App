@@ -5,4 +5,5 @@ export default {
     CHAMPION_LIST_TAB: 'ChampionListTab',
     LOGIN: 'Login',
     PROFILE: 'Profile',
+    VERIFICATION_EMAIL: 'VerificationEmail',
 }

@@ -19,6 +19,7 @@ import { SearchBar } from '@rneui/themed';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { BackgroundImage } from '@rneui/base';
 import colors from '../../utils/constants/colors';
+import LinkAccountPopup from '../../components/home/LinkAccountPopup';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const Home = () => {
@@ -56,10 +57,13 @@ const Home = () => {
             fondo: 'https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltcae83a0aa30a801d/662c40f9c9de4670e8d4ace6/043024_LoL_Patch_14_9_Notes_Banner.jpg?'
         }
     ]);
+    function Capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
     const [value, setValue] = React.useState("");
 
     const championWinratestats = require('../../utils/json/MatchesChampionsPerRole.json');
-    const [region, setRegion] = React.useState('kr');
+    const [region, setRegion] = React.useState('KR');
 
     const [regionSearch, setRegionSearch] = React.useState('EUW');
     const [searching, isSearching] = React.useState(false);
@@ -67,8 +71,10 @@ const Home = () => {
     const [resultSearch, setResultSearch] = React.useState(null);
     const [foundChampions, setFoundChampions] = React.useState(null);
     const [championList, setChampionList] = React.useState(null);
+    const [summonerList, setSummonerList] = React.useState(null);
+
     const [foundSummoners, setFoundSummoners] = React.useState(null);
-    const[test, setTest] = React.useState(null);
+    const [test, setTest] = React.useState(null);
     useEffect(() => {
         async function fetchData() {
             if (search != null && search != undefined && search.length > 0) {
@@ -92,14 +98,43 @@ const Home = () => {
         }
         fetchData();
     }, [search]);
-    useEffect(()=>{
-        console.log(foundChampions);
+    useEffect(() => {
+        // console.log(foundChampions);
         setChampionList(
-            <View>
-
+            <View style={{ marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: colors.text, fontSize: 16, fontFamily: fonts.K2D_B, marginBottom: 10 }}>Champions</Text>
+                <FlatList
+                    scrollEnabled={false}
+                    data={foundChampions}
+                    contentContainerStyle={{ gap: 10 }}
+                    renderItem={({ item }) => (
+                        <View style={{ display: 'flex', flexDirection: 'row', gap: 10, backgroundColor: colors.tertiaryPurple, padding: 10, borderRadius: 7, alignItems: 'center', borderWidth: 1, borderColor: colors.contrast }}>
+                            <Image source={{ uri: `https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/${Capitalize(item.champion.slug)}.png` }} style={{ width: 34, height: 34, borderRadius: 99, borderWidth: 1, borderColor: colors.contrast }} />
+                            <Text style={{ color: colors.text, fontFamily: fonts.K2D_R, fontSize: 16 }}>{Capitalize(item.champion.name)}</Text>
+                        </View>
+                    )}
+                />
             </View>
         );
     }, [foundChampions])
+    useEffect(() => {
+        // console.log(foundSummoners);
+        setSummonerList(
+            <View style={{ marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: colors.text, fontSize: 16, fontFamily: fonts.K2D_B, marginBottom: 10 }}>Summoners</Text>
+                <FlatList
+                    scrollEnabled={false}
+                    data={foundSummoners}
+                    contentContainerStyle={{ gap: 10 }}
+                    renderItem={({ item }) => (
+                        <View style={{ display: 'flex', flexDirection: 'row', gap: 10, backgroundColor: colors.tertiaryPurple, padding: 10, borderRadius: 7, alignItems: 'center', borderWidth: 1, borderColor: colors.contrast }}>
+                            <Text style={{ color: colors.text, fontFamily: fonts.K2D_R, fontSize: 16 }}>{item.name}</Text>
+                        </View>
+                    )}
+                />
+            </View>
+        );
+    }, [foundSummoners])
     const resultadoChampions = () => {
         return (
             <View>
@@ -188,7 +223,7 @@ const Home = () => {
      * @return {Promise<Object>} A promise that resolves to the response object containing the top players.
      */
     async function handleTopUsers(region) {
-        const response = await fetch(`${Environment.RR_API}/summoner/top-players-world?region=${region}`, {}).then(response => response.json()).catch(error => console.log(error));
+        const response = await fetch(`${Environment.RR_API}/summoners/top-players-world?region=${region}`, {}).then(response => response.json()).catch(error => console.log(error));
         return response;
     }
 
@@ -342,6 +377,39 @@ const Home = () => {
         isSearching(false);
     }
 
+    function handleLinkAccount() {
+        console.log('huh');
+    }
+
+    const LinkAccountBtn = () => {
+        return (
+            <View style={styles.linkAccountContainer}>
+                <Pressable style={styles.linkAccountBtn} onPress={handleLinkAccount}>
+                    <Text style={[styles.text, styles.bold]}>Link League Account</Text>
+                </Pressable>
+            </View>
+        );
+    }
+
+    const LinkAccountContainer = () => {
+        return (
+            <View style={styles.linkAccountPopupContainer}>
+                <View style={styles.linkAccountPopup}>
+                    <Text style={[styles.text, styles.bold]}>Link your League of Legends Account!</Text>
+                    <View>
+                        <Text style={styles.text}>1. Enter your Game Name + Tag Line</Text>
+                        <Text style={styles.text}>2. Change your Summoner Icon To The Displayed One</Text>
+                        <Text style={styles.text}>3. Finish!</Text>
+                    </View>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder='GameName#EUW1'
+                    />
+                </View>
+            </View>
+        );
+    }
+
     const formattedText = parseText(`{$img:https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Smolder_0.jpg}`);
     return (
         <ScrollView
@@ -350,7 +418,8 @@ const Home = () => {
                 minWidth: '100%',
                 minHeight: '100%',
                 padding: 20,
-            }}>
+            }}
+            keyboardDismissMode='on-drag'>
             <View style={{
                 minWidth: '100%',
                 alignItems: 'center'
@@ -396,18 +465,25 @@ const Home = () => {
                         <Text style={{ color: 'white', textAlign: 'center' }}>EUW</Text>
                     </Pressable>
                 </View>
-                <View style={[{ position: 'absolute', backgroundColor: '#252046', right: 0, left: 0, top: 190, zIndex: 999 }, { display: searching == true ? 'flex' : 'none' }]}>
+                <View style={[{ position: 'absolute', backgroundColor: '#252046', right: 0, left: 0, top: 190, zIndex: 999, borderWidth: 1, borderColor: colors.contrast, borderBottomLeftRadius: 7, borderBottomRightRadius: 7 }, { display: searching == true ? 'flex' : 'none' }]}>
                     <View>
-                        <Text style={{ color: colors.text, fontSize: 16, fontFamily: fonts.K2D_B }}>Champions</Text>
-                        {test}
+                        {
+                            (foundSummoners == null || foundSummoners == undefined) ? <ActivityIndicator size="large" color="#D0D0D0" /> : summonerList
+                        }
+                        {
+                            (foundChampions == null || foundSummoners == undefined) ? <ActivityIndicator size="large" color="#D0D0D0" /> : championList
+                        }
                     </View>
                 </View>
             </View>
+            {LinkAccountBtn()}
+
             {/** FORM */}
-            <View>
-                <Text style={{ fontFamily: fonts.AOBOSHI_R, fontSize: 22, color: 'white', marginVertical: 15 }}>Top Players In The Region</Text>
+            <View style={{ marginBottom: 15 }}>
+                <Text style={{ fontFamily: fonts.AOBOSHI_R, fontSize: 22, color: 'white' }}>Top Players In The Region</Text>
             </View>
             {/* VIEW OF TOP 5 - 1633 - USERS */}
+
             <View
                 style={{
                     display: 'flex',
@@ -513,10 +589,53 @@ const Home = () => {
                     )}
                 />
             </View>
+            <LinkAccountPopup/>
         </ScrollView>
     )
 }
 
 export default Home
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    linkAccountPopupContainer: {
+        minWidth: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 247,
+        position: 'absolute',
+        top: 200
+    },
+    linkAccountPopup: {
+        backgroundColor: colors.bgPurple,
+        minHeight: 247,
+        minWidth: 340,
+        borderRadius: 7,
+        borderColor: colors.contrast,
+        borderWidth: 1,
+        paddingHorizontal: 22
+    },
+    linkAccountContainer: {
+        minWidth: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 30,
+    },
+    linkAccountBtn: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.fillContrast,
+        padding: 10,
+        borderRadius: 7,
+        minWidth: '70%',
+    },
+    text: {
+        fontSize: 16,
+        fontFamily: fonts.K2D_R,
+        color: 'white',
+    },
+    bold: {
+        fontFamily: fonts.K2D_B
+    }
+})
